@@ -21,5 +21,5 @@ public class GuestRequest {
     private String note;
     private String adminId;
     private String runningNumber;
-    private byte[] image;
+    private String image;
 }

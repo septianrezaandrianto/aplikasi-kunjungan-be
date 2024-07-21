@@ -5,7 +5,7 @@ import java.util.Locale;
 
 public interface Constant {
 
-    static String PREFFIX_RUNNING_NUMBER = "PRT-";
+    static String PREFFIX_RUNNING_NUMBER = "PM{NowDate}-";
 
     String[] AUTH_WHITELIST = {
             "/swagger-ui/**",
@@ -21,11 +21,11 @@ public interface Constant {
     };
 
     class DateFormatter {
-        public static SimpleDateFormat DISPLAY_DATE_FORMATTER = new SimpleDateFormat("dd/MM/yyyy");
+        public static SimpleDateFormat RUNNING_NUMBER_DATE_FORMATTER = new SimpleDateFormat("ddMMyyyy");
         public static SimpleDateFormat FULL_DISPLAY_DATE_FORMATTER = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         public static SimpleDateFormat DB_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
         public static SimpleDateFormat YEAR_FORMATTER = new SimpleDateFormat("yyyy");
-        public static SimpleDateFormat EXCEL_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        public static SimpleDateFormat VISIT_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         public static SimpleDateFormat FULL_DATE_FORMATTER = new SimpleDateFormat("dd MMMM yyyy",  new Locale("id", "ID"));
         public static SimpleDateFormat EXCEL_UPLOAD_DATE_FORMATTER = new SimpleDateFormat("MM/dd/yyyy");
     }

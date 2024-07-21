@@ -9,6 +9,7 @@ import com.skripsi.aplikasi_kunjungan_be.repositories.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Objects;
@@ -20,6 +21,7 @@ public class AdminServiceImpl implements AdminService {
     private AdminRepository adminRepository;
 
     @Override
+    @Transactional
     public Response<?> createAdmin(AdminRequest adminRequest) {
         Admin existAdmin = adminRepository.getAdminByUsername(adminRequest.getUsername());
         if (Objects.nonNull(existAdmin)) {
@@ -37,10 +39,10 @@ public class AdminServiceImpl implements AdminService {
                 .role(adminRequest.getRole())
                 .fullName(adminRequest.getFullName())
                 .build();
+        adminRepository.save(admin);
         return Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .statusMessage(Constant.Response.SUCCESS_MESSAGE)
-                .data(adminRepository.save(admin))
                 .build();
     }
 

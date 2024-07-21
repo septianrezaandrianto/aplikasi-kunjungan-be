@@ -1,12 +1,16 @@
 package com.skripsi.aplikasi_kunjungan_be.entities;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.skripsi.aplikasi_kunjungan_be.services.ByteArrayBase64Deserializer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -40,8 +44,11 @@ public class Guest implements Serializable {
     private Date visitDateStart;
     private Date visitDateEnd;
     private String note;
-    @Column(length = 100)
-    private String adminId;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "admin_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+//    @JsonIgnore
+    private Admin admin;
     @Column(length = 25)
     private String status;
     private Date createdDate;
@@ -51,6 +58,7 @@ public class Guest implements Serializable {
     private Boolean isDeleted;
     @Column(length = 25)
     private String runningNumber;
+    @JsonDeserialize(using = ByteArrayBase64Deserializer.class)
     private byte[] image;
 
 }
