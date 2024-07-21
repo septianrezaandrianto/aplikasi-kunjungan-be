@@ -1,0 +1,9 @@
+package com.skripsi.aplikasi_kunjungan_be.services;
+
+import com.skripsi.aplikasi_kunjungan_be.dtos.GuestRequest;
+import com.skripsi.aplikasi_kunjungan_be.dtos.Response;
+
+public interface GuestService {
+
+    public Response<?> createGuest(GuestRequest guestRequest);
+}

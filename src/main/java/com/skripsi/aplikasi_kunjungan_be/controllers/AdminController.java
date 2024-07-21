@@ -1,0 +1,26 @@
+package com.skripsi.aplikasi_kunjungan_be.controllers;
+
+import com.skripsi.aplikasi_kunjungan_be.dtos.AdminRequest;
+import com.skripsi.aplikasi_kunjungan_be.services.AdminService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RequestMapping("/admin")
+@RestController
+public class AdminController {
+
+    @Autowired
+    private AdminService adminService;
+
+    @PostMapping("/createAdmin")
+    ResponseEntity<?> createAdmin(@Valid @RequestBody AdminRequest adminRequest) {
+        return ResponseEntity.ok(adminService.createAdmin(adminRequest));
+    }
+
+    @GetMapping("/getAdminList")
+    ResponseEntity<?> getAdminList() {
+        return ResponseEntity.ok(adminService.getAdminList());
+    }
+}
