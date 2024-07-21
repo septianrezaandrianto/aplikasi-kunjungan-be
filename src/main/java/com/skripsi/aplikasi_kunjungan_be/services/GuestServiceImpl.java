@@ -6,6 +6,8 @@ import com.skripsi.aplikasi_kunjungan_be.dtos.Response;
 import com.skripsi.aplikasi_kunjungan_be.entities.Admin;
 import com.skripsi.aplikasi_kunjungan_be.entities.Guest;
 import com.skripsi.aplikasi_kunjungan_be.entities.QueueNumber;
+import com.skripsi.aplikasi_kunjungan_be.handler.DataExistException;
+import com.skripsi.aplikasi_kunjungan_be.handler.NotFoundException;
 import com.skripsi.aplikasi_kunjungan_be.repositories.AdminRepository;
 import com.skripsi.aplikasi_kunjungan_be.repositories.GuestRepository;
 import com.skripsi.aplikasi_kunjungan_be.repositories.QueueNumberRepository;
@@ -33,15 +35,17 @@ public class GuestServiceImpl implements GuestService {
     @Transactional
     public Response<?> createGuest(GuestRequest guestRequest) throws ParseException {
         Date nowDate = new Date();
-        Guest existGuest = guestRepository.getGuestIdentitasAndVisitDate(guestRequest.getIdentitasNumber(),
-                guestRequest.getVisitDateStart(), guestRequest.getVisitDateEnd());
+        Guest existGuest = guestRepository.getGuestByIdentitasAndStatus(guestRequest.getIdentitasNumber(),
+                Constant.Status.WAITING_APPROVAL);
 
         if (Objects.nonNull(existGuest)) {
-
+            throw new DataExistException("Nomor Identitas " + Constant.Response.EXSIST_MESSAGE.replace("{value}",
+                    existGuest.getIdentitasNumber()) + " dan sedang menunggu persetujuan");
         }
         Admin admin = adminRepository.getAdminById(guestRequest.getAdminId());
         if (Objects.isNull(admin)) {
-
+            throw new NotFoundException(Constant.Response.NOT_FOUND_MESSAGE.replace("{value1}", "Admin")
+                    .replace("{value2}", guestRequest.getAdminId()));
         }
 
         QueueNumber queueNumber = QueueNumber.builder()
@@ -75,6 +79,29 @@ public class GuestServiceImpl implements GuestService {
                 .build();
         guestRepository.save(guest);
 
+        return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(Constant.Response.SUCCESS_MESSAGE)
+                .build();
+    }
+
+    @Override
+    public Response<?> doAction(String runningNumber, String action) {
+        Guest guest = guestRepository.getGuestByRunningNumber(runningNumber);
+        if (Objects.isNull(guest)) {
+            throw new NotFoundException(Constant.Response.NOT_FOUND_MESSAGE.replace("{value1}", "Admin")
+                    .replace("{value2}", runningNumber));
+        }
+        String status = null;
+        if (Objects.nonNull(action) && Constant.Status.APPROVE.equals(action)) {
+            status = Constant.Status.APPROVE;
+        } else if (Objects.nonNull(action) && Constant.Status.REJECT.equals(action)) {
+            status = Constant.Status.REJECT;
+        }
+
+        if (Objects.nonNull(status) && Constant.Status.WAITING_APPROVAL.equals(guest.getStatus())) {
+            guestRepository.updateStatus("SYSTEM", new Date(), status, guest.getRunningNumber());
+        }
         return Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .statusMessage(Constant.Response.SUCCESS_MESSAGE)

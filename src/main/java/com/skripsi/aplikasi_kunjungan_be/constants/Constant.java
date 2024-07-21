@@ -11,23 +11,18 @@ public interface Constant {
             "/swagger-ui/**",
             "/api-docs/**",
             "/swagger-ui.html",
-            "/cpl/doForgotPassword",
-            "/user/register",
-            "/user/login",
-            "/user/doActiveUser",
-            "/report/**",
-            "/reportPenagihan/**",
-            "/uploadData/downloadTemplate"
+            "/guest/createGuest",
+            "/guest/doAction",
+            "/guest/doAction/**",
+            "/queueNumber/getRunningNumber",
+            "/admin/createAdmin",
+            "/admin/login"
     };
 
     class DateFormatter {
         public static SimpleDateFormat RUNNING_NUMBER_DATE_FORMATTER = new SimpleDateFormat("ddMMyyyy");
-        public static SimpleDateFormat FULL_DISPLAY_DATE_FORMATTER = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         public static SimpleDateFormat DB_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
-        public static SimpleDateFormat YEAR_FORMATTER = new SimpleDateFormat("yyyy");
         public static SimpleDateFormat VISIT_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        public static SimpleDateFormat FULL_DATE_FORMATTER = new SimpleDateFormat("dd MMMM yyyy",  new Locale("id", "ID"));
-        public static SimpleDateFormat EXCEL_UPLOAD_DATE_FORMATTER = new SimpleDateFormat("MM/dd/yyyy");
     }
 
     class Role {
@@ -40,25 +35,6 @@ public interface Constant {
         public static String REJECT = "REJECT";
         public static String WAITING_APPROVAL = "WAITING FOR APPROVAL";
     }
-
-    class Extension {
-        public static String PNG = "png";
-        public static String JPG = "jpg";
-        public static String JPEG = "jpeg";
-
-        public static String SLASH = "/";
-        public static String DOT = ".";
-        public static String UNDERSCORE = "_";
-        public static String XLS = "xls";
-        public static String XLSX = "xlsx";
-        public static String PDF = "pdf";
-        public static String EMPTY_STRING = "";
-    }
-
-    class Unicode {
-        public static String SOLIDUS = "%2F";
-    }
-
 
     class Credential {
         public static String AES_CIPHER = "AES";

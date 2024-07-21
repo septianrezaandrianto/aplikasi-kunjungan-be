@@ -2,8 +2,12 @@ package com.skripsi.aplikasi_kunjungan_be.repositories;
 
 import com.skripsi.aplikasi_kunjungan_be.entities.Guest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 
 @Repository
 public interface GuestRepository extends JpaRepository<Guest,String> {
@@ -12,4 +16,17 @@ public interface GuestRepository extends JpaRepository<Guest,String> {
             "and to_char(visit_date_start, 'yyyy-MM-dd HH:mm') = ?2 " +
             "and to_char(visit_date_end, 'yyyy-MM-dd HH:mm') = ?3 and is_deleted = false", nativeQuery = true)
     Guest getGuestIdentitasAndVisitDate(String identitasNumber, String visitDateStart, String visitDateEnd);
+
+    @Query(value = "select * from guest where identitas_number = ?1 " +
+            "and status = ?2 " +
+            "and is_deleted = false", nativeQuery = true)
+    Guest getGuestByIdentitasAndStatus(String identitasNumber, String status);
+
+    @Query(value = "select * from guest where running_number = ?1 and is_deleted = false", nativeQuery = true)
+    Guest getGuestByRunningNumber(String runningNumber);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update guest set modified_by = ?1, modified_date =?2, status = ?3 WHERE running_number = ?4 and is_deleted = false", nativeQuery = true)
+    void updateStatus(String modifiedBy, Date modifiedDate, String status, String runningNumber);
 }

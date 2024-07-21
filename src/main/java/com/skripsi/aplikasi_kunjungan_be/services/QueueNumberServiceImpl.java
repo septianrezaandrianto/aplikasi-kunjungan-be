@@ -28,6 +28,11 @@ public class QueueNumberServiceImpl implements QueueNumberService {
         if (Objects.isNull(queueNumber)) {
             String paddedNumber = String.format("%07d", 1);
             runningNumber = prefix.concat(paddedNumber);
+            return Response.builder()
+                    .statusCode(HttpStatus.OK.value())
+                    .statusMessage(Constant.Response.SUCCESS_MESSAGE)
+                    .data(runningNumber)
+                    .build();
         }
 
         int createNewNumber = Integer.parseInt(queueNumber.getRunningNumber().split("-")[1]);

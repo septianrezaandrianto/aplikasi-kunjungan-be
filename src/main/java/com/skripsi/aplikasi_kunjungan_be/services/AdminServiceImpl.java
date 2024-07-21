@@ -2,35 +2,55 @@ package com.skripsi.aplikasi_kunjungan_be.services;
 
 
 import com.skripsi.aplikasi_kunjungan_be.constants.Constant;
-import com.skripsi.aplikasi_kunjungan_be.dtos.AdminRequest;
-import com.skripsi.aplikasi_kunjungan_be.dtos.Response;
+import com.skripsi.aplikasi_kunjungan_be.dtos.*;
 import com.skripsi.aplikasi_kunjungan_be.entities.Admin;
+import com.skripsi.aplikasi_kunjungan_be.handler.DataExistException;
+import com.skripsi.aplikasi_kunjungan_be.handler.NotFoundException;
 import com.skripsi.aplikasi_kunjungan_be.repositories.AdminRepository;
+import com.skripsi.aplikasi_kunjungan_be.securities.jwts.JwtUtils;
+import com.skripsi.aplikasi_kunjungan_be.securities.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private AdminRepository adminRepository;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtUtils jwtUtils;
+    @Value("${jwt.expirationMs}")
+    private int jwtExpirationMs;
+    @Autowired
+    PasswordEncoder encoder;
 
     @Override
     @Transactional
     public Response<?> createAdmin(AdminRequest adminRequest) {
         Admin existAdmin = adminRepository.getAdminByUsername(adminRequest.getUsername());
         if (Objects.nonNull(existAdmin)) {
-
+            throw new DataExistException("Username " + Constant.Response.EXSIST_MESSAGE.replace("{value}",
+                    adminRequest.getUsername()));
         }
 
         Admin admin = Admin.builder()
                 .username(adminRequest.getUsername())
-                .password(adminRequest.getPassword())
+                .password(encoder.encode(adminRequest.getPassword()))
                 .phoneNumber(adminRequest.getPhoneNumber())
                 .address(adminRequest.getAddress())
                 .createdBy(adminRequest.getUsername())
@@ -52,6 +72,49 @@ public class AdminServiceImpl implements AdminService {
                 .statusCode(HttpStatus.OK.value())
                 .statusMessage(Constant.Response.SUCCESS_MESSAGE)
                 .data(adminRepository.getAdminList())
+                .build();
+    }
+
+    @Override
+    public Response<?> login(LoginRequest loginRequest) throws Exception {
+        Admin admin = adminRepository.getAdminByUsername(loginRequest.getUsername());
+        if (Objects.isNull(admin)) {
+            throw new NotFoundException(Constant.Response.INVALID_LOGIN_MESSAGE);
+        }
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+
+        OAuth2Response oAuth2Response = OAuth2Response.builder()
+                .access_token(jwt)
+                .expires_in(jwtExpirationMs)
+                .token_type("Bearer")
+                .build();
+
+        LoginResponse response = mappingLoginResponse(admin, oAuth2Response);
+        return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(Constant.Response.SUCCESS_MESSAGE)
+                .data(response)
+                .build();
+    }
+
+    private LoginResponse mappingLoginResponse(Admin admin, OAuth2Response oAuth2Response) {
+        return LoginResponse.builder()
+                .userId(admin.getId())
+                .username(admin.getUsername())
+                .accessToken(oAuth2Response.getAccess_token())
+                .tokenType(oAuth2Response.getToken_type())
+                .expiresIn(oAuth2Response.getExpires_in())
+                .role(admin.getRole())
                 .build();
     }
 }

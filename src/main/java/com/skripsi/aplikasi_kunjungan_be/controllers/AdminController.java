@@ -1,6 +1,8 @@
 package com.skripsi.aplikasi_kunjungan_be.controllers;
 
 import com.skripsi.aplikasi_kunjungan_be.dtos.AdminRequest;
+import com.skripsi.aplikasi_kunjungan_be.dtos.LoginRequest;
+import com.skripsi.aplikasi_kunjungan_be.dtos.Response;
 import com.skripsi.aplikasi_kunjungan_be.services.AdminService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,5 +24,10 @@ public class AdminController {
     @GetMapping("/getAdminList")
     ResponseEntity<?> getAdminList() {
         return ResponseEntity.ok(adminService.getAdminList());
+    }
+
+    @PostMapping(value = "/login")
+    public ResponseEntity<Response<?>> login(@Valid @RequestBody LoginRequest loginRequest) throws Exception {
+        return ResponseEntity.ok(adminService.login(loginRequest));
     }
 }
