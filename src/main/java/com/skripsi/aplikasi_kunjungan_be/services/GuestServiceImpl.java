@@ -1,8 +1,10 @@
 package com.skripsi.aplikasi_kunjungan_be.services;
 
+import com.google.gson.Gson;
 import com.skripsi.aplikasi_kunjungan_be.constants.Constant;
 import com.skripsi.aplikasi_kunjungan_be.dtos.GuestRequest;
 import com.skripsi.aplikasi_kunjungan_be.dtos.Response;
+import com.skripsi.aplikasi_kunjungan_be.dtos.WaGatewayRequest;
 import com.skripsi.aplikasi_kunjungan_be.entities.Admin;
 import com.skripsi.aplikasi_kunjungan_be.entities.Guest;
 import com.skripsi.aplikasi_kunjungan_be.entities.QueueNumber;
@@ -11,7 +13,10 @@ import com.skripsi.aplikasi_kunjungan_be.handler.NotFoundException;
 import com.skripsi.aplikasi_kunjungan_be.repositories.AdminRepository;
 import com.skripsi.aplikasi_kunjungan_be.repositories.GuestRepository;
 import com.skripsi.aplikasi_kunjungan_be.repositories.QueueNumberRepository;
+import com.skripsi.aplikasi_kunjungan_be.rest.WaGatewayRest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +27,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Service
+@Slf4j
 public class GuestServiceImpl implements GuestService {
 
     @Autowired
@@ -30,6 +36,11 @@ public class GuestServiceImpl implements GuestService {
     private AdminRepository adminRepository;
     @Autowired
     private QueueNumberRepository queueNumberRepository;
+    @Autowired
+    private WaGatewayRest waGatewayRest;
+
+    @Value("${base.url}")
+    private String baseUrl;
 
     @Override
     @Transactional
@@ -79,6 +90,18 @@ public class GuestServiceImpl implements GuestService {
                 .build();
         guestRepository.save(guest);
 
+        String waMessage = "Ada Request Masuk untuk Anda, Dari : <br>" +
+                "Nama : " + guest.getFullName() + ",<br>" +
+                "Tekan link ini approve : " + baseUrl + "/guest/doAction/" + guest.getRunningNumber() +"/APPROVE <br>" +
+                "Tekan link ini reject : " + baseUrl + "/guest/doAction/" + guest.getRunningNumber() +"/REJECT";
+        WaGatewayRequest waGatewayRequest = WaGatewayRequest.builder()
+                .countryCode("62")
+                .target(admin.getPhoneNumber())
+                .message(waMessage)
+                .build();
+
+        log.info("waGatewayRequest : " + new Gson().toJson(waGatewayRequest));
+        waGatewayRest.sendMessage(waGatewayRequest);
         return Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .statusMessage(Constant.Response.SUCCESS_MESSAGE)

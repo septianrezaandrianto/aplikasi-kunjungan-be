@@ -16,7 +16,9 @@ public interface Constant {
             "/guest/doAction/**",
             "/queueNumber/getRunningNumber",
             "/admin/createAdmin",
-            "/admin/login"
+            "/admin/login",
+            "/admin/getAdminList",
+            "/waGateway/sendMessage"
     };
 
     class DateFormatter {
