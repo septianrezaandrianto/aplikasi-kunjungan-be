@@ -90,10 +90,11 @@ public class GuestServiceImpl implements GuestService {
                 .build();
         guestRepository.save(guest);
 
-        String waMessage = "Ada Request Masuk untuk Anda, Dari : <br>" +
-                "Nama : " + guest.getFullName() + ",<br>" +
-                "Tekan link ini approve : " + baseUrl + "/guest/doAction/" + guest.getRunningNumber() +"/APPROVE <br>" +
-                "Tekan link ini reject : " + baseUrl + "/guest/doAction/" + guest.getRunningNumber() +"/REJECT";
+        String approveLink = baseUrl + "/guest/doAction/" + guest.getRunningNumber() + "/APPROVE";
+        String rejectLink = baseUrl + "/guest/doAction/" + guest.getRunningNumber() + "/REJECT";
+        String waMessage = "Ada Request Masuk untuk Anda, Dari : \nNama : " + guest.getFullName() +
+                ",\nTekan link ini approve : " + approveLink +
+                "\nTekan link ini reject : " + rejectLink;
         WaGatewayRequest waGatewayRequest = WaGatewayRequest.builder()
                 .countryCode("62")
                 .target(admin.getPhoneNumber())
@@ -101,7 +102,8 @@ public class GuestServiceImpl implements GuestService {
                 .build();
 
         log.info("waGatewayRequest : " + new Gson().toJson(waGatewayRequest));
-        waGatewayRest.sendMessage(waGatewayRequest);
+        String responseRest = waGatewayRest.sendMessage(waGatewayRequest).block();
+        log.info("responseRest : " + responseRest);
         return Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .statusMessage(Constant.Response.SUCCESS_MESSAGE)
