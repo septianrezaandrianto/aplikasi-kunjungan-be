@@ -9,4 +9,5 @@ public interface GuestService {
 
     Response<?> createGuest(GuestRequest guestRequest) throws ParseException;
     Response<?> doAction(String runningNumber, String action);
+    Response<?> getPage(int pageNumber, int pageSize, String filter);
 }

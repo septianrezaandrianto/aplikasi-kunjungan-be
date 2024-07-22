@@ -26,4 +26,11 @@ public class GuestController {
                                       @PathVariable("action") String action) {
         return ResponseEntity.ok(guestService.doAction(runningNumber, action));
     }
+
+    @GetMapping(value = "/getPage")
+    public ResponseEntity<?> getPage(@RequestParam(value = "pageNumber")int pageNumber,
+                                                       @RequestParam(value = "pageSize")int pageSize,
+                                                       @RequestParam(value = "filter", defaultValue = "")String filter) {
+        return ResponseEntity.ok(guestService.getPage(pageNumber, pageSize, filter));
+    }
 }

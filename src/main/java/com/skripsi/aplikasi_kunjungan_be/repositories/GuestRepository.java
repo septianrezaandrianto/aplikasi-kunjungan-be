@@ -1,6 +1,8 @@
 package com.skripsi.aplikasi_kunjungan_be.repositories;
 
 import com.skripsi.aplikasi_kunjungan_be.entities.Guest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +31,12 @@ public interface GuestRepository extends JpaRepository<Guest,String> {
     @Transactional
     @Query(value = "update guest set modified_by = ?1, modified_date =?2, status = ?3 WHERE running_number = ?4 and is_deleted = false", nativeQuery = true)
     void updateStatus(String modifiedBy, Date modifiedDate, String status, String runningNumber);
+
+    @Query(value = "select * from guest where is_deleted = false order by running_number DESC", nativeQuery = true)
+    Page<Guest> getPage(Pageable pageable);
+
+    @Query(value = "select * from guest where lower(full_name) like ?1 and is_deleted = false order by running_number DESC", nativeQuery = true)
+    Page<Guest> getPageWithFilter(String fullName, Pageable pageable);
+
+
 }

@@ -17,6 +17,9 @@ import com.skripsi.aplikasi_kunjungan_be.rest.WaGatewayRest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -141,6 +144,37 @@ public class GuestServiceImpl implements GuestService {
                 .statusCode(HttpStatus.OK.value())
                 .statusMessage(message)
                 .build();
+    }
+
+    @Override
+    public Response<?> getPage(int pageNumber, int pageSize, String filter) {
+        String filterMapping = mappingFilter(filter);
+        Pageable paging = PageRequest.of(pageNumber, pageSize);
+
+        Page<Guest> guestPaging = null;
+        if(Objects.isNull(filter) || "".equals(filter.trim())) {
+            guestPaging = guestRepository.getPage(paging);
+        } else {
+            guestPaging = guestRepository.getPageWithFilter(filterMapping.toLowerCase(), paging);
+        }
+
+        return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(Constant.Response.SUCCESS_MESSAGE)
+                .data(guestPaging.getContent())
+                .totalPage(guestPaging.getTotalPages())
+                .totalData(guestPaging.getTotalElements())
+                .pageNumber(pageNumber)
+                .pageSize(pageSize)
+                .build();
+    }
+
+    private String mappingFilter(String filter) {
+        if(Objects.isNull(filter) || "".equals(filter.trim())) {
+            return "%%";
+        } else {
+            return "%".concat(filter.toLowerCase().trim()).concat("%");
+        }
     }
 
     private byte[] decodeBase64String(String base64String) {
