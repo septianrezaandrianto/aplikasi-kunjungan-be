@@ -92,9 +92,14 @@ public class GuestServiceImpl implements GuestService {
 
         String approveLink = baseUrl + "/guest/doAction/" + guest.getRunningNumber() + "/APPROVE";
         String rejectLink = baseUrl + "/guest/doAction/" + guest.getRunningNumber() + "/REJECT";
-        String waMessage = "Ada Request Masuk untuk Anda, Dari : \nNama : " + guest.getFullName() +
-                ",\nTekan link ini approve : " + approveLink +
-                "\nTekan link ini reject : " + rejectLink;
+        String waMessage = "Ada Pesan Masuk untuk Anda dari : " +
+                "\n\nNama Lengkap: " + guest.getFullName() +
+                "\nNo HP : " + guest.getPhoneNumber() +
+                "\nNo Antrian : " + guest.getRunningNumber() +
+                "\nKantor : " + guest.getOfficeName() +
+                "\nWaktu Kunjungan : " + guestRequest.getVisitDateStart() +  " - " + guestRequest.getVisitDateEnd() +
+                ",\n\nKlik untuk Approve : " + approveLink +
+                "\n\nKlik untuk Reject : " + rejectLink;
         WaGatewayRequest waGatewayRequest = WaGatewayRequest.builder()
                 .countryCode("62")
                 .target(admin.getPhoneNumber())
@@ -127,9 +132,14 @@ public class GuestServiceImpl implements GuestService {
         if (Objects.nonNull(status) && Constant.Status.WAITING_APPROVAL.equals(guest.getStatus())) {
             guestRepository.updateStatus("SYSTEM", new Date(), status, guest.getRunningNumber());
         }
+
+        String message = Constant.Response.SUCCESS_MESSAGE;
+        if (!Constant.Status.WAITING_APPROVAL.equals(guest.getStatus())) {
+            message = "Status anda sudah pernah di " + guest.getStatus();
+        }
         return Response.builder()
                 .statusCode(HttpStatus.OK.value())
-                .statusMessage(Constant.Response.SUCCESS_MESSAGE)
+                .statusMessage(message)
                 .build();
     }
 
