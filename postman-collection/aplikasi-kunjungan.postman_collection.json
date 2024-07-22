@@ -1,0 +1,272 @@
+{
+	"info": {
+		"_postman_id": "d69a7d2f-b4b3-4a28-9d83-00950c3af3f4",
+		"name": "aplikasi-kunjungan",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10747639"
+	},
+	"item": [
+		{
+			"name": "queueNumber",
+			"item": [
+				{
+					"name": "getRunningNumber",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/queueNumber/getRunningNumber",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"queueNumber",
+								"getRunningNumber"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "createAdmin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\" : \"admin\",\n    \"fullName\" : \"Septian Reza Andrianto Diningrat Surojo\",\n    \"password\" : \"admin\",\n    \"address\" : \"Bekasi\",\n    \"phoneNumber\" : \"08972633\",\n    \"role\" : \"ADMIN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/createAdmin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"createAdmin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAdminList",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/getAdminList",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"getAdminList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\" : \"rezaf\",\n    \"password\" : \"12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "guest",
+			"item": [
+				{
+					"name": "createGuest",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"visitorIdNumber\": \"dd\",\n    \"identitasNumber\": \"\",\n    \"phoneNumber\": \"0809398888\",\n    \"fullName\": \"121\",\n    \"officeName\": \"223\",\n    \"email\": \"okoaksa@gmail.com\",\n    \"visitDateStart\": \"2024-07-22 04:04\",\n    \"visitDateEnd\": \"2024-07-25 04:05\",\n    \"note\": \"gass\",\n    \"adminId\": \"4028818490d479400190d4b8bdf10004\",\n    \"runningNumber\": \"PRT-0000012349\",\n    \"image\": \"\",\n    \"visitorId\": \"dd\",\n    \"identitasId\": \"sds\",\n    \"phoneNo\": \"121\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/guest/createGuest",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"guest",
+								"createGuest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "doAction",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/guest/doAction/PRT-0000012353/APPROVE",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"guest",
+								"doAction",
+								"PRT-0000012353",
+								"APPROVE"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getPage",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXphZiIsImlhdCI6MTcyMTY2NzA4MywiZXhwIjoxNzIxNjcwNjgzfQ._slHGhcs1mGpGUHU9SvJGtZKtbm0_uJHUWzBp5Fa1ek",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/guest/getPage?pageNumber=0&pageSize=1&filter=s",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"guest",
+								"getPage"
+							],
+							"query": [
+								{
+									"key": "pageNumber",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "1"
+								},
+								{
+									"key": "filter",
+									"value": "s"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "waGateway",
+			"item": [
+				{
+					"name": "Wa Rest",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"target\" : \"089628936403\",\n    \"message\" : \"Ada Request Masuk untuk Anda, Dari : \\u003cbr\\u003eNama : 23232,\\u003cbr\\u003eTekan link ini approve : `http://localhost:8091/guest/doAction/PM22072024-0012351/APPROVE` \\u003cbr\\u003eTekan link ini reject : `http://localhost:8091/guest/doAction/PM22072024-0012351/REJECT`\",\n    \"countryCode\" : \"62\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/waGateway/sendMessage",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"waGateway",
+								"sendMessage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sendWA",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "!nDeevWygv5hx_Bpx#vZ"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"target\" : \"087772520040\",\n    \"message\" : \"test message WA Gateway\",\n    \"countryCode\" : \"62\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.fonnte.com/send",
+							"protocol": "https",
+							"host": [
+								"api",
+								"fonnte",
+								"com"
+							],
+							"path": [
+								"send"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -101,6 +101,7 @@ public class GuestServiceImpl implements GuestService {
                 "\nNo Antrian : " + guest.getRunningNumber() +
                 "\nKantor : " + guest.getOfficeName() +
                 "\nWaktu Kunjungan : " + guestRequest.getVisitDateStart() +  " - " + guestRequest.getVisitDateEnd() +
+                "\nKeperluan Kunjungan : " + guestRequest.getNote() +
                 ",\n\nKlik untuk Approve : " + approveLink +
                 "\n\nKlik untuk Reject : " + rejectLink;
         WaGatewayRequest waGatewayRequest = WaGatewayRequest.builder()
