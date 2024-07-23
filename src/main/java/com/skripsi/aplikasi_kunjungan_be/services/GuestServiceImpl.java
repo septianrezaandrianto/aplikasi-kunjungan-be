@@ -134,6 +134,26 @@ public class GuestServiceImpl implements GuestService {
         }
 
         if (Objects.nonNull(status) && Constant.Status.WAITING_APPROVAL.equals(guest.getStatus())) {
+
+            String waMessage = null;
+            if (Constant.Status.APPROVE.equals(action)) {
+                waMessage = "Selemat!!!\n\n" +
+                        "Permintaan anda dengan nomor antrian : " + runningNumber + " telah di APPROVE";
+            } else {
+                waMessage = "Maaf!!!\n\n" +
+                        "Permintaan anda dengan nomor antrian : " + runningNumber + " di REJECT";
+            }
+
+            WaGatewayRequest waGatewayRequest = WaGatewayRequest.builder()
+                    .countryCode("62")
+                    .target(guest.getPhoneNumber())
+                    .message(waMessage)
+                    .build();
+
+            log.info("waGatewayRequest : " + new Gson().toJson(waGatewayRequest));
+            String responseRest = waGatewayRest.sendMessage(waGatewayRequest).block();
+            log.info("responseRest : " + responseRest);
+
             guestRepository.updateStatus("SYSTEM", new Date(), status, guest.getRunningNumber());
         }
 

@@ -9,5 +9,6 @@ public interface AdminService {
     Response<?> createAdmin(AdminRequest adminRequest);
     Response<?> getAdminList();
     Response<?> login(LoginRequest loginRequest) throws Exception;
+    Response<?> getPage(int pageNumber, int pageSize, String filter);
 
 }

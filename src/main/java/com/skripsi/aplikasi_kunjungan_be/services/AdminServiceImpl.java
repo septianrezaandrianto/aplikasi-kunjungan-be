@@ -11,6 +11,9 @@ import com.skripsi.aplikasi_kunjungan_be.securities.jwts.JwtUtils;
 import com.skripsi.aplikasi_kunjungan_be.securities.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,6 +41,37 @@ public class AdminServiceImpl implements AdminService {
     private int jwtExpirationMs;
     @Autowired
     PasswordEncoder encoder;
+
+    @Override
+    public Response<?> getPage(int pageNumber, int pageSize, String filter) {
+        String filterMapping = mappingFilter(filter);
+        Pageable paging = PageRequest.of(pageNumber, pageSize);
+
+        Page<Admin> adminPaging = null;
+        if(Objects.isNull(filter) || "".equals(filter.trim())) {
+            adminPaging = adminRepository.getPage(paging);
+        } else {
+            adminPaging = adminRepository.getPageWithFilter(filterMapping.toLowerCase(), paging);
+        }
+
+        return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(Constant.Response.SUCCESS_MESSAGE)
+                .data(adminPaging.getContent())
+                .totalPage(adminPaging.getTotalPages())
+                .totalData(adminPaging.getTotalElements())
+                .pageNumber(pageNumber)
+                .pageSize(pageSize)
+                .build();
+    }
+
+    private String mappingFilter(String filter) {
+        if(Objects.isNull(filter) || "".equals(filter.trim())) {
+            return "%%";
+        } else {
+            return "%".concat(filter.toLowerCase().trim()).concat("%");
+        }
+    }
 
     @Override
     @Transactional

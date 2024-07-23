@@ -30,4 +30,11 @@ public class AdminController {
     public ResponseEntity<Response<?>> login(@Valid @RequestBody LoginRequest loginRequest) throws Exception {
         return ResponseEntity.ok(adminService.login(loginRequest));
     }
+
+    @GetMapping(value = "/getPage")
+    public ResponseEntity<?> getPage(@RequestParam(value = "pageNumber")int pageNumber,
+                                     @RequestParam(value = "pageSize")int pageSize,
+                                     @RequestParam(value = "filter", defaultValue = "")String filter) {
+        return ResponseEntity.ok(adminService.getPage(pageNumber, pageSize, filter));
+    }
 }
