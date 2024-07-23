@@ -39,7 +39,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\" : \"admin\",\n    \"fullName\" : \"Septian Reza Andrianto Diningrat Surojo\",\n    \"password\" : \"admin\",\n    \"address\" : \"Bekasi\",\n    \"phoneNumber\" : \"08972633\",\n    \"role\" : \"ADMIN\"\n}",
+							"raw": "{\n    \"username\" : \"admin3\",\n    \"fullName\" : \"Nisan\",\n    \"password\" : \"admin3\",\n    \"address\" : \"Jakarta\",\n    \"phoneNumber\" : \"085711047335\",\n    \"role\" : \"RECEPTIONIST\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -90,7 +90,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\" : \"rezaf\",\n    \"password\" : \"12345\"\n}",
+							"raw": "{\n    \"username\" : \"admin\",\n    \"password\" : \"admin\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -105,6 +105,48 @@
 							"path": [
 								"admin",
 								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getPage",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcyMTc1NTg1OSwiZXhwIjoxNzIxNzU5NDU5fQ.hOLQJKLvX4iYOdUNOP8j93QbE7enva6nDU9TBUms648",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/getPage?pageNumber=0&pageSize=2&filter=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"getPage"
+							],
+							"query": [
+								{
+									"key": "pageNumber",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "2"
+								},
+								{
+									"key": "filter",
+									"value": ""
+								}
 							]
 						}
 					},
