@@ -14,7 +14,12 @@ import com.skripsi.aplikasi_kunjungan_be.repositories.AdminRepository;
 import com.skripsi.aplikasi_kunjungan_be.repositories.GuestRepository;
 import com.skripsi.aplikasi_kunjungan_be.repositories.QueueNumberRepository;
 import com.skripsi.aplikasi_kunjungan_be.rest.WaGatewayRest;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -24,9 +29,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -41,6 +49,8 @@ public class GuestServiceImpl implements GuestService {
     private QueueNumberRepository queueNumberRepository;
     @Autowired
     private WaGatewayRest waGatewayRest;
+    @Autowired
+    private HttpServletResponse httpServletResponse;
 
     @Value("${base.url}")
     private String baseUrl;
@@ -120,6 +130,7 @@ public class GuestServiceImpl implements GuestService {
     }
 
     @Override
+    @Transactional
     public Response<?> doAction(String runningNumber, String action) {
         Guest guest = guestRepository.getGuestByRunningNumber(runningNumber);
         if (Objects.isNull(guest)) {
@@ -189,6 +200,115 @@ public class GuestServiceImpl implements GuestService {
                 .pageSize(pageSize)
                 .build();
     }
+
+
+    public void generateXlsxReport(String date, String status) throws IOException {
+        List<Guest> guestList = guestRepository.getGuestListByDateAndStatus(date, status);
+
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Report");
+
+            // Create style for borders
+            CellStyle borderStyle = workbook.createCellStyle();
+            borderStyle.setBorderBottom(BorderStyle.THIN);
+            borderStyle.setBorderTop(BorderStyle.THIN);
+            borderStyle.setBorderRight(BorderStyle.THIN);
+            borderStyle.setBorderLeft(BorderStyle.THIN);
+
+            // Add two header rows: Date and Status
+            Row dateRow = sheet.createRow(0);
+            dateRow.createCell(0).setCellValue("Tanggal: " + date);
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 4)); // Merge all columns
+            dateRow.getCell(0).setCellStyle(borderStyle); // Apply border style
+
+            Row statusRow = sheet.createRow(1);
+            statusRow.createCell(0).setCellValue("Status: " + status);
+            sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 4)); // Merge all columns
+            statusRow.getCell(0).setCellStyle(borderStyle); // Apply border style
+
+            // Create a Row for header
+            Row headerRow = sheet.createRow(2);
+            headerRow.createCell(0).setCellValue("No");
+            headerRow.createCell(1).setCellValue("Name");
+            headerRow.createCell(2).setCellValue("Kantor");
+            headerRow.createCell(3).setCellValue("Status");
+            headerRow.createCell(4).setCellValue("Photo"); // Added column for photo
+            for (int i = 0; i <= 4; i++) {
+                headerRow.getCell(i).setCellStyle(borderStyle); // Apply border style
+            }
+
+            // Write guestList data to Excel
+            int rowNum = 3;
+            for (Guest guest : guestList) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(rowNum - 3);
+                row.createCell(1).setCellValue(guest.getFullName());
+                row.createCell(2).setCellValue(guest.getOfficeName());
+                row.createCell(3).setCellValue(guest.getStatus());
+
+                // Handle image if present
+                byte[] imageData = guest.getImage();
+                if (imageData != null) {
+                    try {
+                        // Add image to the workbook
+                        int pictureIdx = workbook.addPicture(imageData, Workbook.PICTURE_TYPE_JPEG);
+                        CreationHelper helper = workbook.getCreationHelper();
+                        Drawing<?> drawing = sheet.createDrawingPatriarch();
+                        ClientAnchor anchor = helper.createClientAnchor();
+
+                        // Set anchor position and size
+                        anchor.setCol1(4); // Column for photo (adjust as needed)
+                        anchor.setRow1(row.getRowNum());
+                        Picture pict = drawing.createPicture(anchor, pictureIdx);
+                        // Auto-size picture to fit cell
+                        pict.resize();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                for (int i = 0; i <= 4; i++) {
+                    row.getCell(i).setCellStyle(borderStyle); // Apply border style
+                }
+            }
+
+            // Add total row at the end
+            Row totalRow = sheet.createRow(rowNum);
+            Cell totalCell = totalRow.createCell(0);
+            totalCell.setCellValue("Total:");
+            totalCell.setCellStyle(borderStyle); // Apply border style
+
+            sheet.addMergedRegion(new CellRangeAddress(
+                    totalRow.getRowNum(), // from row
+                    totalRow.getRowNum(), // to row
+                    1, // from column
+                    4 // to column
+            ));
+
+            totalRow.createCell(1).setCellValue(guestList.size());
+            totalRow.getCell(1).setCellStyle(borderStyle);// Apply border style
+
+            // Auto-size columns (optional)
+            for (int i = 0; i <= 4; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            // Set content type and header for the response
+            httpServletResponse.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\"Report-Tamu-" + date + ".xlsx\"");
+
+            // Write the workbook content to the servlet response's OutputStream
+            ServletOutputStream outputStream = httpServletResponse.getOutputStream();
+            workbook.write(outputStream);
+
+            // Flush the output stream
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle exception
+        }
+    }
+
 
     private String mappingFilter(String filter) {
         if(Objects.isNull(filter) || "".equals(filter.trim())) {

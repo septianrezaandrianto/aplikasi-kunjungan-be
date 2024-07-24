@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface GuestRepository extends JpaRepository<Guest,String> {
@@ -38,5 +39,7 @@ public interface GuestRepository extends JpaRepository<Guest,String> {
     @Query(value = "select * from guest where lower(full_name) like ?1 and is_deleted = false order by running_number DESC", nativeQuery = true)
     Page<Guest> getPageWithFilter(String fullName, Pageable pageable);
 
+    @Query(value = "select * from guest where to_char(created_date, 'yyyy-MM-dd') = ?1 and status =?2 order by created_date desc", nativeQuery = true)
+    List<Guest> getGuestListByDateAndStatus(String date, String status);
 
 }
