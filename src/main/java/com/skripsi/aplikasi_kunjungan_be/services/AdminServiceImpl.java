@@ -73,6 +73,7 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
+
     @Override
     @Transactional
     public Response<?> createAdmin(AdminRequest adminRequest) {
@@ -139,6 +140,50 @@ public class AdminServiceImpl implements AdminService {
                 .statusMessage(Constant.Response.SUCCESS_MESSAGE)
                 .data(response)
                 .build();
+    }
+
+    @Override
+    public Response<?> getById(String id) {
+        Admin admin = adminRepository.getAdminById(id);
+        if(Objects.isNull(admin)) {
+            throw new NotFoundException(Constant.Response.DATA_NOT_FOUND_MESSAGE);
+        }
+
+        return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(Constant.Response.SUCCESS_MESSAGE)
+                .data(admin)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public Response<?> deleteAdmin(String id) {
+        Admin admin = adminRepository.getAdminById(id);
+        if(Objects.isNull(admin)) {
+            throw new NotFoundException(Constant.Response.DATA_NOT_FOUND_MESSAGE);
+        }
+        adminRepository.deleteSoft(true, "SYSTEM", new Date(), id);
+        return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(Constant.Response.SUCCESS_MESSAGE)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public Response<?> updateAdmin(String id, AdminRequest adminRequest) {
+        Admin admin = adminRepository.getAdminById(id);
+        if(Objects.isNull(admin)) {
+            throw new NotFoundException(Constant.Response.DATA_NOT_FOUND_MESSAGE);
+        }
+        adminRepository.updateAdmin(adminRequest.getRole(), adminRequest.getPhoneNumber(), adminRequest.getAddress(),
+                "SYSTEM", new Date(), id);
+        return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(Constant.Response.SUCCESS_MESSAGE)
+                .build();
+
     }
 
     private LoginResponse mappingLoginResponse(Admin admin, OAuth2Response oAuth2Response) {

@@ -37,4 +37,19 @@ public class AdminController {
                                      @RequestParam(value = "filter", defaultValue = "")String filter) {
         return ResponseEntity.ok(adminService.getPage(pageNumber, pageSize, filter));
     }
+
+    @GetMapping(value = "/getById/{id}")
+    public ResponseEntity<?> getById(@PathVariable("id") String id) {
+        return ResponseEntity.ok(adminService.getById(id));
+    }
+
+    @DeleteMapping(value = "/deleteAdmin/{id}")
+    public ResponseEntity<?> deleteAdmin(@PathVariable("id") String id) {
+        return ResponseEntity.ok(adminService.deleteAdmin(id));
+    }
+
+    @PutMapping(value="/updateAdmin/{id}")
+    public ResponseEntity<?> updateAdmin(@PathVariable("id")String id, @RequestBody AdminRequest adminRequest) {
+        return ResponseEntity.ok(adminService.updateAdmin(id, adminRequest));
+    }
 }

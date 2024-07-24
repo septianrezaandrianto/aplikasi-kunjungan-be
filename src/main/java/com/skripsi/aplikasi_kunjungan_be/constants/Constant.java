@@ -18,7 +18,8 @@ public interface Constant {
             "/admin/createAdmin",
             "/admin/login",
             "/admin/getAdminList",
-            "/waGateway/sendMessage"
+            "/waGateway/sendMessage",
+            "/admin/**"
     };
 
     class DateFormatter {
