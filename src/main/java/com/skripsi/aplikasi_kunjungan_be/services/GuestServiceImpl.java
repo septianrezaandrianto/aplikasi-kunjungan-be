@@ -32,10 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -201,7 +198,6 @@ public class GuestServiceImpl implements GuestService {
                 .build();
     }
 
-
     public void generateXlsxReport(String date, String status) throws IOException {
         List<Guest> guestList = guestRepository.getGuestListByDateAndStatus(date, status);
 
@@ -218,78 +214,90 @@ public class GuestServiceImpl implements GuestService {
             // Add two header rows: Date and Status
             Row dateRow = sheet.createRow(0);
             dateRow.createCell(0).setCellValue("Tanggal: " + date);
-            sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 4)); // Merge all columns
-            dateRow.getCell(0).setCellStyle(borderStyle); // Apply border style
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 8));
+            dateRow.getCell(0).setCellStyle(borderStyle);
 
             Row statusRow = sheet.createRow(1);
             statusRow.createCell(0).setCellValue("Status: " + status);
-            sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 4)); // Merge all columns
-            statusRow.getCell(0).setCellStyle(borderStyle); // Apply border style
+            sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 8));
+            statusRow.getCell(0).setCellStyle(borderStyle);
 
             // Create a Row for header
             Row headerRow = sheet.createRow(2);
-            headerRow.createCell(0).setCellValue("No");
-            headerRow.createCell(1).setCellValue("Name");
-            headerRow.createCell(2).setCellValue("Kantor");
-            headerRow.createCell(3).setCellValue("Status");
-            headerRow.createCell(4).setCellValue("Photo"); // Added column for photo
-            for (int i = 0; i <= 4; i++) {
-                headerRow.getCell(i).setCellStyle(borderStyle); // Apply border style
+            String[] headers = {
+                    "No", "Waktu Kunjungan Dimulai", "Waktu Kunjungan Berakhir", "Nama Pengunjung",
+                    "Alamat Kantor", "Nama Yang Dituju", "Tujuan Kunjungan", "Status", "Foto"
+            };
+            for (int i = 0; i < headers.length; i++) {
+                headerRow.createCell(i).setCellValue(headers[i]);
+                headerRow.getCell(i).setCellStyle(borderStyle);
             }
+
+            // Set the width of the image column to fit 3 cm
+            int imageColumnWidth = (int) (3 * 28.35 * 256 / 7); // Width in units
+            sheet.setColumnWidth(8, imageColumnWidth);
 
             // Write guestList data to Excel
             int rowNum = 3;
             for (Guest guest : guestList) {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(rowNum - 3);
-                row.createCell(1).setCellValue(guest.getFullName());
-                row.createCell(2).setCellValue(guest.getOfficeName());
-                row.createCell(3).setCellValue(guest.getStatus());
+                row.createCell(1).setCellValue(Constant.DateFormatter.VISIT_DATE_FORMATTER.format(guest.getVisitDateStart()));
+                row.createCell(2).setCellValue(Constant.DateFormatter.VISIT_DATE_FORMATTER.format(guest.getVisitDateEnd()));
+                row.createCell(3).setCellValue(guest.getFullName());
+                row.createCell(4).setCellValue(guest.getOfficeName());
+                row.createCell(5).setCellValue(
+                        Objects.nonNull(guest.getAdmin()) ? guest.getAdmin().getFullName() : "-"
+                );
+                row.createCell(6).setCellValue(truncateString(guest.getNote(), 500));
+                row.createCell(7).setCellValue(guest.getStatus());
+                row.createCell(8).setCellValue(""); // Placeholder for the image
+
+                // Set row height for image (4 cm)
+                row.setHeightInPoints((float) (4 * 28.35)); // Height in points
 
                 // Handle image if present
                 byte[] imageData = guest.getImage();
-                if (imageData != null) {
+                if (imageData != null && imageData.length > 0) {
                     try {
-                        // Add image to the workbook
                         int pictureIdx = workbook.addPicture(imageData, Workbook.PICTURE_TYPE_JPEG);
                         CreationHelper helper = workbook.getCreationHelper();
                         Drawing<?> drawing = sheet.createDrawingPatriarch();
                         ClientAnchor anchor = helper.createClientAnchor();
 
-                        // Set anchor position and size
-                        anchor.setCol1(4); // Column for photo (adjust as needed)
+                        // Set anchor for the image to be centered
+                        anchor.setCol1(8);
                         anchor.setRow1(row.getRowNum());
+                        anchor.setCol2(9);
+                        anchor.setRow2(row.getRowNum() + 1);
+                        anchor.setDx1((int) ((imageColumnWidth - 85.05) / 2 * 256 / 7)); // Center horizontally
+                        anchor.setDy1((int) ((113.4 - 4 * 28.35) / 2 * 256 / 7)); // Center vertically
+
                         Picture pict = drawing.createPicture(anchor, pictureIdx);
-                        // Auto-size picture to fit cell
-                        pict.resize();
+                        pict.resize(400.05 / pict.getImageDimension().getWidth(), 395.4 / pict.getImageDimension().getHeight()); // Resize to the given dimensions
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
-                for (int i = 0; i <= 4; i++) {
-                    row.getCell(i).setCellStyle(borderStyle); // Apply border style
+                for (int i = 0; i <= 8; i++) {
+                    row.getCell(i).setCellStyle(borderStyle);
                 }
             }
 
             // Add total row at the end
             Row totalRow = sheet.createRow(rowNum);
             Cell totalCell = totalRow.createCell(0);
-            totalCell.setCellValue("Total:");
-            totalCell.setCellStyle(borderStyle); // Apply border style
-
             sheet.addMergedRegion(new CellRangeAddress(
-                    totalRow.getRowNum(), // from row
-                    totalRow.getRowNum(), // to row
-                    1, // from column
-                    4 // to column
+                    totalRow.getRowNum(), totalRow.getRowNum(), 1, 8
             ));
-
+            totalCell.setCellValue("Total:");
+            totalCell.setCellStyle(borderStyle);
             totalRow.createCell(1).setCellValue(guestList.size());
-            totalRow.getCell(1).setCellStyle(borderStyle);// Apply border style
+            totalRow.getCell(1).setCellStyle(borderStyle);
 
             // Auto-size columns (optional)
-            for (int i = 0; i <= 4; i++) {
+            for (int i = 0; i <= 7; i++) {
                 sheet.autoSizeColumn(i);
             }
 
@@ -298,17 +306,21 @@ public class GuestServiceImpl implements GuestService {
             httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\"Report-Tamu-" + date + ".xlsx\"");
 
             // Write the workbook content to the servlet response's OutputStream
-            ServletOutputStream outputStream = httpServletResponse.getOutputStream();
-            workbook.write(outputStream);
-
-            // Flush the output stream
-            outputStream.flush();
+            try (ServletOutputStream outputStream = httpServletResponse.getOutputStream()) {
+                workbook.write(outputStream);
+                outputStream.flush();
+            }
         } catch (IOException e) {
             e.printStackTrace();
-            // Handle exception
         }
     }
 
+    private String truncateString(String value, int maxLength) {
+        if (Objects.nonNull(value) && value.length() > maxLength) {
+            return value.substring(0, maxLength);
+        }
+        return value;
+    }
 
     private String mappingFilter(String filter) {
         if(Objects.isNull(filter) || "".equals(filter.trim())) {
