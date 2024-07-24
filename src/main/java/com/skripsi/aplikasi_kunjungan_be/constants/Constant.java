@@ -12,7 +12,7 @@ public interface Constant {
             "/api-docs/**",
             "/swagger-ui.html",
             "/guest/createGuest",
-            "/guest/doAction",
+            "/guest/**",
             "/guest/doAction/**",
             "/queueNumber/getRunningNumber",
             "/admin/createAdmin",

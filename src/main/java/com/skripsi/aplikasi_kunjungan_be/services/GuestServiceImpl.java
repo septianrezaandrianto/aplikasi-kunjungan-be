@@ -199,7 +199,12 @@ public class GuestServiceImpl implements GuestService {
     }
 
     public void generateXlsxReport(String date, String status) throws IOException {
-        List<Guest> guestList = guestRepository.getGuestListByDateAndStatus(date, status);
+        List<Guest> guestList = null;
+        if (status.equals("ALL")) {
+            guestList = guestRepository.getGuestListByDate(date);
+        } else {
+            guestList = guestRepository.getGuestListByDateAndStatus(date, status);
+        }
 
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Report");
