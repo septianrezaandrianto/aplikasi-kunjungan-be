@@ -80,6 +80,16 @@
 				{
 					"name": "login",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcyMTc1NTg1OSwiZXhwIjoxNzIxNzU5NDU5fQ.hOLQJKLvX4iYOdUNOP8j93QbE7enva6nDU9TBUms648",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -118,7 +128,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcyMTc1NTg1OSwiZXhwIjoxNzIxNzU5NDU5fQ.hOLQJKLvX4iYOdUNOP8j93QbE7enva6nDU9TBUms648",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcyMTkyMTE0MCwiZXhwIjoxNzIxOTI0NzQwfQ.nkZ__vnsOhHX49t5GYVqIvcBgnVs1ZkyDz1xeA6VF1k",
 									"type": "string"
 								}
 							]
@@ -147,6 +157,102 @@
 									"key": "filter",
 									"value": ""
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcyMTkxOTUwNCwiZXhwIjoxNzIxOTIzMTA0fQ.6u-6xhY6B8EjoH_rZORKSqiXpPTdk5SYK9GObXwX3to",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/deleteAdmin/12345",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"deleteAdmin",
+								"12345"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcyMTkxOTUwNCwiZXhwIjoxNzIxOTIzMTA0fQ.6u-6xhY6B8EjoH_rZORKSqiXpPTdk5SYK9GObXwX3to",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/getById/4028818490daef090190dbb436d0000e",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"getById",
+								"4028818490daef090190dbb436d0000e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcyMTkxOTUwNCwiZXhwIjoxNzIxOTIzMTA0fQ.6u-6xhY6B8EjoH_rZORKSqiXpPTdk5SYK9GObXwX3to",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\" : \"\",\n    \"password\" : \"\",\n    \"phoneNumber\" : \"\",\n    \"address\" : \"\",\n    \"role\" : \"\",\n    \"fullName\" : \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/updateAdmin/12345",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"updateAdmin",
+								"12345"
 							]
 						}
 					},
@@ -207,6 +313,16 @@
 				{
 					"name": "getPage",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcyMTg0MDMxMiwiZXhwIjoxNzIxODQzOTEyfQ.yuyoQxQQtT0j2C9CcZTTtTvVlUiqPWSTitABPHWPaHY",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [
 							{
@@ -237,6 +353,36 @@
 									"key": "filter",
 									"value": "s"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "generateReportXlsx",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcyMTg0MDc1MCwiZXhwIjoxNzIxODQ0MzUwfQ.XcusfAJqKNOOOzcCzDL6uAvBYQPJgx9tEw1mhD2FrNE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/guest/generateXlsxReport/2024-07-23/APPROVE",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"guest",
+								"generateXlsxReport",
+								"2024-07-23",
+								"APPROVE"
 							]
 						}
 					},
