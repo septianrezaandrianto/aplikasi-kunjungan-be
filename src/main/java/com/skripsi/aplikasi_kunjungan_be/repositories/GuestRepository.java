@@ -45,7 +45,7 @@ public interface GuestRepository extends JpaRepository<Guest,String> {
     @Query(value = "select * from guest where to_char(created_date, 'yyyy-MM-dd') = ?1  and is_deleted = false order by created_date desc", nativeQuery = true)
     List<Guest> getGuestListByDate(String date);
 
-    @Query(value = "select count(1) from guest where to_char(created_date, 'yyyy-MM-dd') = ?1 and status =?2 and is_deleted = false", nativeQuery = true)
+    @Query(value = "select count(1) from guest where to_char(visit_date_start, 'yyyy-MM-dd') = ?1 and status =?2 and is_deleted = false", nativeQuery = true)
     Integer countTotalUser(String date, String status);
 
 }
