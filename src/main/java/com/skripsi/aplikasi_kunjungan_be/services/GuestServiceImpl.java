@@ -9,6 +9,7 @@ import com.skripsi.aplikasi_kunjungan_be.entities.Admin;
 import com.skripsi.aplikasi_kunjungan_be.entities.Guest;
 import com.skripsi.aplikasi_kunjungan_be.entities.QueueNumber;
 import com.skripsi.aplikasi_kunjungan_be.handler.DataExistException;
+import com.skripsi.aplikasi_kunjungan_be.handler.GeneralErrorException;
 import com.skripsi.aplikasi_kunjungan_be.handler.NotFoundException;
 import com.skripsi.aplikasi_kunjungan_be.repositories.AdminRepository;
 import com.skripsi.aplikasi_kunjungan_be.repositories.GuestRepository;
@@ -118,7 +119,12 @@ public class GuestServiceImpl implements GuestService {
                 .build();
 
         log.info("waGatewayRequest : " + new Gson().toJson(waGatewayRequest));
-        String responseRest = waGatewayRest.sendMessage(waGatewayRequest).block();
+        String responseRest = null;
+        try {
+            responseRest = waGatewayRest.sendMessage(waGatewayRequest).block();
+        } catch (Exception e) {
+            throw new GeneralErrorException("WA Gateway sedang mengalami gangguan, cobalah beberapa saat lagi!");
+        }
         log.info("responseRest : " + responseRest);
         return Response.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -159,7 +165,12 @@ public class GuestServiceImpl implements GuestService {
                     .build();
 
             log.info("waGatewayRequest : " + new Gson().toJson(waGatewayRequest));
-            String responseRest = waGatewayRest.sendMessage(waGatewayRequest).block();
+            String responseRest = null;
+            try {
+               responseRest = waGatewayRest.sendMessage(waGatewayRequest).block();
+            } catch (Exception e) {
+                throw new GeneralErrorException("WA Gateway sedang mengalami gangguan, cobalah beberapa saat lagi!");
+            }
             log.info("responseRest : " + responseRest);
 
             guestRepository.updateStatus("SYSTEM", new Date(), status, guest.getRunningNumber());

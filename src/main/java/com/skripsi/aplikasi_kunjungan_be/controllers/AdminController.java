@@ -1,5 +1,6 @@
 package com.skripsi.aplikasi_kunjungan_be.controllers;
 
+import com.skripsi.aplikasi_kunjungan_be.dtos.AdminEditRequest;
 import com.skripsi.aplikasi_kunjungan_be.dtos.AdminRequest;
 import com.skripsi.aplikasi_kunjungan_be.dtos.LoginRequest;
 import com.skripsi.aplikasi_kunjungan_be.dtos.Response;
@@ -49,7 +50,7 @@ public class AdminController {
     }
 
     @PutMapping(value="/updateAdmin/{id}")
-    public ResponseEntity<?> updateAdmin(@PathVariable("id")String id, @RequestBody AdminRequest adminRequest) {
-        return ResponseEntity.ok(adminService.updateAdmin(id, adminRequest));
+    public ResponseEntity<?> updateAdmin(@PathVariable("id")String id,@Valid @RequestBody AdminEditRequest adminEditRequest) {
+        return ResponseEntity.ok(adminService.updateAdmin(id, adminEditRequest));
     }
 }
