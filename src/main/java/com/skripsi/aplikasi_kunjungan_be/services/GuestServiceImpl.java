@@ -209,6 +209,16 @@ public class GuestServiceImpl implements GuestService {
                 .build();
     }
 
+    @Override
+    public Response<?> countTotalGuest(String date, String status) {
+        Integer totalUser = guestRepository.countTotalUser(date, status);
+        return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(Constant.Response.SUCCESS_MESSAGE)
+                .data(totalUser)
+                .build();
+    }
+
     public void generateXlsxReport(String date, String status) throws IOException {
         List<Guest> guestList = null;
         if (status.equals("ALL")) {
