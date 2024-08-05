@@ -42,4 +42,9 @@ public class GuestController {
         return ResponseEntity.ok(Constant.Response.SUCCESS_MESSAGE);
     }
 
+    @GetMapping(value = "/countTotalGuest/{date}/{status}")
+    public ResponseEntity<?> countTotalGuest(@PathVariable("date")String date, @PathVariable("status")String status) throws IOException {
+        return ResponseEntity.ok(guestService.countTotalGuest(date,status));
+    }
+
 }

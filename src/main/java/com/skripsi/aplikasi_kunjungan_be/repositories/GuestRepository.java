@@ -39,10 +39,13 @@ public interface GuestRepository extends JpaRepository<Guest,String> {
     @Query(value = "select * from guest where lower(full_name) like ?1 and is_deleted = false order by created_date DESC", nativeQuery = true)
     Page<Guest> getPageWithFilter(String fullName, Pageable pageable);
 
-    @Query(value = "select * from guest where to_char(created_date, 'yyyy-MM-dd') = ?1 and status =?2 order by created_date desc", nativeQuery = true)
+    @Query(value = "select * from guest where to_char(created_date, 'yyyy-MM-dd') = ?1 and status =?2  and is_deleted = false order by created_date desc", nativeQuery = true)
     List<Guest> getGuestListByDateAndStatus(String date, String status);
 
-    @Query(value = "select * from guest where to_char(created_date, 'yyyy-MM-dd') = ?1 order by created_date desc", nativeQuery = true)
+    @Query(value = "select * from guest where to_char(created_date, 'yyyy-MM-dd') = ?1  and is_deleted = false order by created_date desc", nativeQuery = true)
     List<Guest> getGuestListByDate(String date);
+
+    @Query(value = "select count(1) from guest where to_char(visit_date_start, 'yyyy-MM-dd') = ?1 and status =?2 and is_deleted = false", nativeQuery = true)
+    Integer countTotalUser(String date, String status);
 
 }

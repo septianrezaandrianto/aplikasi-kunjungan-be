@@ -3,6 +3,7 @@ package com.skripsi.aplikasi_kunjungan_be.controllers.advice;
 import com.skripsi.aplikasi_kunjungan_be.dtos.Response;
 import com.skripsi.aplikasi_kunjungan_be.handler.BadRequestCustomException;
 import com.skripsi.aplikasi_kunjungan_be.handler.DataExistException;
+import com.skripsi.aplikasi_kunjungan_be.handler.GeneralErrorException;
 import com.skripsi.aplikasi_kunjungan_be.handler.NotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -64,6 +65,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(mappingError(HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(), errors),
                 new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(GeneralErrorException.class)
+    public final ResponseEntity<Response<?>> generalErrorException(GeneralErrorException ex) {
+        List<String> errors = Collections.singletonList(ex.getMessage());
+        return new ResponseEntity<>(mappingError(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), errors),
+                new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private Response<Object> mappingError(int statusCode, String statusMessage, List<String> errors) {

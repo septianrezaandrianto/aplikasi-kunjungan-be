@@ -12,4 +12,5 @@ public interface GuestService {
     Response<?> doAction(String runningNumber, String action);
     Response<?> getPage(int pageNumber, int pageSize, String filter);
     void generateXlsxReport(String date, String status) throws IOException;
+    Response<?> countTotalGuest(String date, String status);
 }

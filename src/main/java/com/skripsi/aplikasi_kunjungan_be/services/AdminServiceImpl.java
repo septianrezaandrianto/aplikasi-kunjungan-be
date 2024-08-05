@@ -172,12 +172,12 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
-    public Response<?> updateAdmin(String id, AdminRequest adminRequest) {
+    public Response<?> updateAdmin(String id, AdminEditRequest adminEditRequest) {
         Admin admin = adminRepository.getAdminById(id);
         if(Objects.isNull(admin)) {
             throw new NotFoundException(Constant.Response.DATA_NOT_FOUND_MESSAGE);
         }
-        adminRepository.updateAdmin(adminRequest.getRole(), adminRequest.getPhoneNumber(), adminRequest.getAddress(),
+        adminRepository.updateAdmin(adminEditRequest.getRole(), adminEditRequest.getPhoneNumber(), adminEditRequest.getAddress(),
                 "SYSTEM", new Date(), id);
         return Response.builder()
                 .statusCode(HttpStatus.OK.value())
