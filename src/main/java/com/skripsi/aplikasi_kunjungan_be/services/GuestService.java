@@ -8,7 +8,7 @@ import java.text.ParseException;
 
 public interface GuestService {
 
-    Response<?> createGuest(GuestRequest guestRequest) throws ParseException;
+    Response<?> createGuest(GuestRequest guestRequest) throws ParseException, InterruptedException;
     Response<?> doAction(String runningNumber, String action);
     Response<?> getPage(int pageNumber, int pageSize, String filter);
     void generateXlsxReport(String date, String status) throws IOException;

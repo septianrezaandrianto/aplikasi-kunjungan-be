@@ -19,7 +19,7 @@ public class GuestController {
     private GuestService guestService;
 
     @PostMapping("/createGuest")
-    public ResponseEntity<?> createGuest(@Valid @RequestBody GuestRequest guestRequest) throws ParseException {
+    public ResponseEntity<?> createGuest(@Valid @RequestBody GuestRequest guestRequest) throws ParseException, InterruptedException {
         return ResponseEntity.ok(guestService.createGuest(guestRequest));
     }
 

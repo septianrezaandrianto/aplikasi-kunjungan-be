@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -54,7 +55,7 @@ public class GuestServiceImpl implements GuestService {
 
     @Override
     @Transactional
-    public Response<?> createGuest(GuestRequest guestRequest) throws ParseException {
+    public Response<?> createGuest(GuestRequest guestRequest) throws ParseException, InterruptedException {
         Date nowDate = new Date();
         Guest existGuest = guestRepository.getGuestByIdentitasAndStatus(guestRequest.getIdentitasNumber(),
                 Constant.Status.WAITING_APPROVAL);
@@ -98,7 +99,6 @@ public class GuestServiceImpl implements GuestService {
                 .createdBy(guestRequest.getFullName())
                 .createdDate(nowDate)
                 .build();
-        guestRepository.save(guest);
 
         String approveLink = baseUrl + "/guest/doAction/" + guest.getRunningNumber() + "/APPROVE";
         String rejectLink = baseUrl + "/guest/doAction/" + guest.getRunningNumber() + "/REJECT";
@@ -120,11 +120,26 @@ public class GuestServiceImpl implements GuestService {
         log.info("waGatewayRequest : " + new Gson().toJson(waGatewayRequest));
         String responseRest = waGatewayRest.sendMessage(waGatewayRequest).block();
         log.info("responseRest : " + responseRest);
+
+        // Run the sleep and save operation asynchronously
+        CompletableFuture.runAsync(() -> {
+            try {
+                log.info("test 1");
+                Thread.sleep(8000);
+                guestRepository.save(guest);
+                log.info("test 2");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.error("Thread was interrupted", e);
+            }
+        });
+
         return Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .statusMessage(Constant.Response.SUCCESS_MESSAGE)
                 .build();
     }
+
 
     @Override
     @Transactional

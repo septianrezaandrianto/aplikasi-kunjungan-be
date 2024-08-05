@@ -33,10 +33,10 @@ public interface GuestRepository extends JpaRepository<Guest,String> {
     @Query(value = "update guest set modified_by = ?1, modified_date =?2, status = ?3 WHERE running_number = ?4 and is_deleted = false", nativeQuery = true)
     void updateStatus(String modifiedBy, Date modifiedDate, String status, String runningNumber);
 
-    @Query(value = "select * from guest where is_deleted = false order by running_number DESC", nativeQuery = true)
+    @Query(value = "select * from guest where is_deleted = false order by created_date DESC", nativeQuery = true)
     Page<Guest> getPage(Pageable pageable);
 
-    @Query(value = "select * from guest where lower(full_name) like ?1 and is_deleted = false order by running_number DESC", nativeQuery = true)
+    @Query(value = "select * from guest where lower(full_name) like ?1 and is_deleted = false order by created_date DESC", nativeQuery = true)
     Page<Guest> getPageWithFilter(String fullName, Pageable pageable);
 
     @Query(value = "select * from guest where to_char(created_date, 'yyyy-MM-dd') = ?1 and status =?2 order by created_date desc", nativeQuery = true)
